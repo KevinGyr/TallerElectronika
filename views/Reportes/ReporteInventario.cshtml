@@ -1,0 +1,115 @@
+@model IEnumerable<TallerElectronika.Models.Producto>
+
+@{
+    ViewData["Title"] = "Reporte de Inventario";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-box"></i> Reporte de Inventario</h1>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.TotalProductos</div>
+            <div class="stat-label">Total de Productos</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.ProductosBajoStock</div>
+            <div class="stat-label">Productos Bajo Stock</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.ValorInventario</div>
+            <div class="stat-label">Valor Total Inventario</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+        <form method="post" action="@Url.Action("GenerarPDFInventario", "Reportes")" style="display: inline;">
+            <button type="submit" class="btn btn-danger w-100" style="height: 100%;">
+                <i class="bi bi-file-pdf"></i> Descargar PDF
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Tabla de Inventario -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th class="d-none d-lg-table-cell">Categoría</th>
+                    <th class="text-end">Precio Unit.</th>
+                    <th class="text-end">Stock</th>
+                    <th class="text-end">Valor Total</th>
+                    <th class="d-none d-lg-table-cell">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var producto in Model)
+                {
+                    var valorProducto = producto.Stock * producto.PrecioUnitario;
+                    var badgeClass = producto.Stock < producto.StockMinimo ? "bg-danger" : "bg-success";
+                    var badgeText = producto.Stock < producto.StockMinimo ? "BAJO" : "OK";
+                    
+                    <tr>
+                        <td><strong>@producto.CodigoProducto</strong></td>
+                        <td>@producto.Nombre</td>
+                        <td class="d-none d-lg-table-cell">@producto.Categoria</td>
+                        <td class="text-end">@producto.PrecioUnitario.ToString("C")</td>
+                        <td class="text-end">@producto.Stock</td>
+                        <td class="text-end"><strong>@valorProducto.ToString("C")</strong></td>
+                        <td class="d-none d-lg-table-cell">
+                            <span class="badge @badgeClass">@badgeText</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-info mt-3">
+        <i class="bi bi-info-circle"></i> No hay productos en el inventario.
+    </div>
+}
+
+<!-- Resumen -->
+@if (Model.Count() > 0)
+{
+    var totalUnidades = Model.Sum(p => p.Stock);
+    var precioPromedio = Model.Average(p => p.PrecioUnitario);
+    var valorTotalInventario = Model.Sum(p => p.Stock * p.PrecioUnitario);
+    
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Resumen</h5>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p><strong>Total de Unidades:</strong> @totalUnidades</p>
+                    <p><strong>Valor Promedio:</strong> @precioPromedio.ToString("C")</p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p><strong style="font-size: 18px;">VALOR TOTAL INVENTARIO:</strong> <span class="text-success" style="font-size: 18px; font-weight: bold;">@valorTotalInventario.ToString("C")</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="mt-3">
+    <a href="@Url.Action("Index", "Reportes")" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>

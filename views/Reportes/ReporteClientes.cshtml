@@ -1,0 +1,87 @@
+@model IEnumerable<TallerElectronika.Models.Cliente>
+
+@{
+    ViewData["Title"] = "Reporte de Clientes";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-people"></i> Reporte de Clientes</h1>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.TotalClientes</div>
+            <div class="stat-label">Total de Clientes</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@ViewBag.ClientesConVentas</div>
+            <div class="stat-label">Clientes Activos</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-value">@(ViewBag.TotalClientes > 0 ? ((ViewBag.ClientesConVentas / (decimal)ViewBag.TotalClientes) * 100).ToString("F1") : "0.0")%</div>
+            <div class="stat-label">% Clientes Activos</div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+        <form method="post" action="@Url.Action("GenerarPDFClientes", "Reportes")" style="display: inline;">
+            <button type="submit" class="btn btn-danger w-100" style="height: 100%;">
+                <i class="bi bi-file-pdf"></i> Descargar PDF
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Tabla de Clientes -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th class="d-none d-md-table-cell">Email</th>
+                    <th class="d-none d-lg-table-cell">Teléfono</th>
+                    <th class="d-none d-lg-table-cell">Ciudad</th>
+                    <th class="text-end">Total Compras</th>
+                    <th class="text-end">Monto Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count() > 0)
+                {
+                    @foreach (var cliente in Model)
+                    {
+                        <tr>
+                            <td><strong>@cliente.Nombre @cliente.Apellido</strong></td>
+                            <td class="d-none d-md-table-cell">@cliente.Email</td>
+                            <td class="d-none d-lg-table-cell">@(string.IsNullOrEmpty(cliente.Telefono) ? "---" : cliente.Telefono)</td>
+                            <td class="d-none d-lg-table-cell">@(string.IsNullOrEmpty(cliente.Ciudad) ? "---" : cliente.Ciudad)</td>
+                            <td class="text-end">@(cliente.Ventas != null ? cliente.Ventas.Count : 0)</td>
+                            <td class="text-end"><strong>@(cliente.Ventas != null ? cliente.Ventas.Sum(v => v.Total).ToString("C") : "$0.00")</strong></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-info mt-3">
+        <i class="bi bi-info-circle"></i> No hay clientes registrados.
+    </div>
+}
+
+<div class="mt-3">
+    <a href="@Url.Action("Index", "Reportes")" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>

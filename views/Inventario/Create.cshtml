@@ -1,0 +1,89 @@
+@model TallerElectronika.Models.Producto
+
+@{
+    ViewData["Title"] = "Nuevo Producto";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-plus-circle"></i> Nuevo Producto</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" action="@Url.Action("Create", "Inventario")">
+                    <!-- Nombre -->
+                    <div class="mb-3">
+                        <label for="Nombre" class="form-label">Nombre del Producto <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="Nombre" name="Nombre" value="@Model?.Nombre" required placeholder="Ej: Resistencia 220Ω" />
+                    </div>
+
+                    <!-- Código Producto -->
+                    <div class="mb-3">
+                        <label for="CodigoProducto" class="form-label">Código de Producto <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="CodigoProducto" name="CodigoProducto" value="@Model?.CodigoProducto" required placeholder="Ej: RES-001" />
+                    </div>
+
+                    <!-- Descripción -->
+                    <div class="mb-3">
+                        <label for="Descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="Descripcion" name="Descripcion" rows="3" placeholder="Detalles sobre el producto...">@Model?.Descripcion</textarea>
+                    </div>
+
+                    <!-- Categoría y Precio -->
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="Categoria" class="form-label">Categoría <span class="text-danger">*</span></label>
+                            <select class="form-select" id="Categoria" name="Categoria" required>
+                                <option value="">-- Selecciona categoría --</option>
+                                <option value="Componentes Pasivos" @(Model?.Categoria == "Componentes Pasivos" ? "selected" : "")>Componentes Pasivos</option>
+                                <option value="Componentes Semiconductores" @(Model?.Categoria == "Componentes Semiconductores" ? "selected" : "")>Semiconductores</option>
+                                <option value="Componentes Optoelectrónicos" @(Model?.Categoria == "Componentes Optoelectrónicos" ? "selected" : "")>Optoelectrónicos</option>
+                                <option value="Conectores" @(Model?.Categoria == "Conectores" ? "selected" : "")>Conectores</option>
+                                <option value="Cables" @(Model?.Categoria == "Cables" ? "selected" : "")>Cables</option>
+                                <option value="Herramientas" @(Model?.Categoria == "Herramientas" ? "selected" : "")>Herramientas</option>
+                                <option value="Otros" @(Model?.Categoria == "Otros" ? "selected" : "")>Otros</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="PrecioUnitario" class="form-label">Precio Unitario ($) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="PrecioUnitario" name="PrecioUnitario" value="@Model?.PrecioUnitario" step="0.01" min="0" required placeholder="0.00" />
+                        </div>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="Stock" class="form-label">Stock Actual <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="Stock" name="Stock" value="@Model?.Stock" min="0" required placeholder="0" />
+                        </div>
+
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="StockMinimo" class="form-label">Stock Mínimo <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="StockMinimo" name="StockMinimo" value="@Model?.StockMinimo" min="0" required placeholder="0" />
+                        </div>
+                    </div>
+
+                    <!-- Información adicional -->
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle"></i> <strong>Nota:</strong> El Stock Mínimo se usa para alertar cuando el inventario está bajo. Si el Stock Actual es menor al Stock Mínimo, aparecerá una alerta.
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="@Url.Action("Index", "Inventario")" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Guardar Producto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

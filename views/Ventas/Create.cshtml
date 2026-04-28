@@ -1,0 +1,505 @@
+@model TallerElectronika.Models.Venta
+
+@{
+    ViewData["Title"] = "Nueva Venta";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-plus-circle"></i> Nueva Venta</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-lg-10">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" action="@Url.Action("Create", "Ventas")" id="ventaForm">
+                    <!-- Cliente con Búsqueda -->
+                    <div class="mb-4">
+                        <label for="clienteSearch" class="form-label">Cliente <span class="text-danger">*</span></label>
+                        <div class="position-relative">
+                            <input 
+                                type="text" 
+                                id="clienteSearch" 
+                                class="form-control form-control-lg" 
+                                placeholder="Busca por nombre o email..." 
+                                autocomplete="off"
+                            />
+                            <div id="clientesList" class="dropdown-menu w-100 position-absolute start-0 mt-1" style="max-height: 300px; overflow-y: auto; display: none;">
+                            </div>
+                        </div>
+                        <input type="hidden" id="ClienteId" name="ClienteId" required />
+                        <small id="clienteSeleccionado" class="text-muted d-block mt-2"></small>
+                    </div>
+
+                    <!-- Sección de Productos -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="bi bi-box"></i> Productos</h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Filtro por Categoría -->
+                            <div class="mb-3">
+                                <label class="form-label">Filtrar por Categoría</label>
+                                <div class="btn-group w-100" role="group" id="categoriasGroup">
+                                    <button type="button" class="btn btn-outline-primary active" data-categoria="todas">
+                                        <i class="bi bi-funnel"></i> Todas
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Búsqueda de Productos -->
+                            <div class="mb-3 position-relative">
+                                <label for="productoSearch" class="form-label">Buscar Producto</label>
+                                <input 
+                                    type="text" 
+                                    id="productoSearch" 
+                                    class="form-control" 
+                                    placeholder="Escribe para buscar..." 
+                                    autocomplete="off"
+                                />
+                                <div id="productosList" class="dropdown-menu w-100 position-absolute start-0 mt-1" style="max-height: 300px; overflow-y: auto; display: none;">
+                                </div>
+                            </div>
+
+                            <!-- Botón Agregar -->
+                            <button type="button" class="btn btn-success mb-3" onclick="agregarProductoSeleccionado()">
+                                <i class="bi bi-plus-circle"></i> Agregar Producto
+                            </button>
+
+                            <!-- Contenedor de Productos Agregados -->
+                            <div id="productosContainer">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle"></i> No hay productos agregados. Busca y agrega productos para comenzar.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="mb-3">
+                        <label for="Observaciones" class="form-label">Observaciones</label>
+                        <textarea id="Observaciones" name="Observaciones" class="form-control" rows="3" placeholder="Notas sobre la venta..."></textarea>
+                    </div>
+
+                    <!-- Resumen -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-md-6 mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>Subtotal:</strong>
+                                        <span id="subtotal">$0.00</span>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>IVA (16%):</strong>
+                                        <span id="iva">$0.00</span>
+                                    </div>
+                                </div>
+                                <div class="col-12 border-top pt-2">
+                                    <div class="d-flex justify-content-between" style="font-size: 1.2rem;">
+                                        <strong>Total:</strong>
+                                        <span id="total" class="text-primary" style="font-weight: bold;">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input oculto para subtotal -->
+                    <input type="hidden" id="SubTotal" name="SubTotal" value="0" />
+
+                    <!-- Botones -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="@Url.Action("Index", "Ventas")" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary" onclick="guardarProductosAgregados()">
+                            <i class="bi bi-check-circle"></i> Guardar Venta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Datos
+    const clientes = @Html.Raw(Json.Serialize(ViewBag.Clientes ?? new List<object>()));
+    const productos = @Html.Raw(Json.Serialize(ViewBag.Productos ?? new List<object>()));
+    
+    let categorias = [];
+    let productoSeleccionado = null;
+    let categoriaSeleccionada = 'todas';
+    let productosAgregados = [];
+
+    // Inicializar
+    window.addEventListener('load', function() {
+        inicializarCategorias();
+        configurarBuscadores();
+    });
+
+    // Inicializar categorías
+    function inicializarCategorias() {
+        // Obtener categorías únicas
+        const categoriasSet = new Set(productos.map(p => p.categoria).filter(c => c));
+        categorias = Array.from(categoriasSet).sort();
+
+        const grupoCateg = document.getElementById('categoriasGroup');
+        grupoCateg.innerHTML = '<button type="button" class="btn btn-outline-primary active" data-categoria="todas"><i class="bi bi-funnel"></i> Todas</button>';
+
+        categorias.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-outline-primary';
+            btn.textContent = cat;
+            btn.dataset.categoria = cat;
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('#categoriasGroup button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                categoriaSeleccionada = this.dataset.categoria;
+                document.getElementById('productoSearch').value = '';
+                // Mostrar productos automáticamente al cambiar categoría
+                mostrarProductos('');
+                // Hacer foco en el campo de búsqueda
+                document.getElementById('productoSearch').focus();
+            });
+            grupoCateg.appendChild(btn);
+        });
+    }
+
+    // Configurar buscadores
+    function configurarBuscadores() {
+        // Búsqueda de clientes
+        document.getElementById('clienteSearch').addEventListener('input', function(e) {
+            const valor = e.target.value.toLowerCase();
+            mostrarClientes(valor);
+        });
+
+        // Focus en el campo de búsqueda de productos (sin escribir)
+        document.getElementById('productoSearch').addEventListener('focus', function(e) {
+            mostrarProductos('');
+        });
+
+        // Búsqueda de productos mientras se escribe
+        document.getElementById('productoSearch').addEventListener('input', function(e) {
+            const valor = e.target.value.toLowerCase();
+            mostrarProductos(valor);
+        });
+
+        // Cerrar dropdown al hacer click fuera
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#clienteSearch') && !e.target.closest('#clientesList')) {
+                document.getElementById('clientesList').style.display = 'none';
+            }
+            if (!e.target.closest('#productoSearch') && !e.target.closest('#productosList')) {
+                document.getElementById('productosList').style.display = 'none';
+            }
+        });
+    }
+
+    // Mostrar clientes filtrados
+    function mostrarClientes(valor) {
+        const lista = document.getElementById('clientesList');
+        
+        if (valor.length < 1) {
+            lista.style.display = 'none';
+            return;
+        }
+
+        const filtrados = clientes.filter(c => 
+            c.nombre.toLowerCase().includes(valor) || 
+            c.apellido.toLowerCase().includes(valor) ||
+            c.email.toLowerCase().includes(valor)
+        );
+
+        if (filtrados.length === 0) {
+            lista.innerHTML = '<div class="dropdown-item disabled">No se encontraron clientes</div>';
+            lista.style.display = 'block';
+            return;
+        }
+
+        lista.innerHTML = filtrados.map(c => `
+            <a href="#" class="dropdown-item" onclick="seleccionarCliente(event, ${c.clienteId}, '${c.nombre} ${c.apellido}', '${c.email}')">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>${c.nombre} ${c.apellido}</strong>
+                        <small class="d-block text-muted">${c.email}</small>
+                        <small class="d-block text-muted">${c.ciudad || 'Sin ciudad'}</small>
+                    </div>
+                </div>
+            </a>
+        `).join('');
+
+        lista.style.display = 'block';
+    }
+
+    // Seleccionar cliente
+    function seleccionarCliente(e, clienteId, nombre, email) {
+        e.preventDefault();
+        document.getElementById('ClienteId').value = clienteId;
+        document.getElementById('clienteSearch').value = nombre;
+        document.getElementById('clienteSeleccionado').innerHTML = `<i class="bi bi-check-circle text-success"></i> <strong>${nombre}</strong> (${email}) seleccionado`;
+        document.getElementById('clientesList').style.display = 'none';
+    }
+
+    // Mostrar productos filtrados
+    function mostrarProductos(valor) {
+        const lista = document.getElementById('productosList');
+
+        let filtrados = productos;
+
+        // Filtrar por categoría
+        if (categoriaSeleccionada !== 'todas') {
+            filtrados = filtrados.filter(p => p.categoria === categoriaSeleccionada);
+        }
+
+        // Filtrar por búsqueda (solo si hay valor)
+        if (valor.length > 0) {
+            filtrados = filtrados.filter(p => 
+                p.nombre.toLowerCase().includes(valor) ||
+                p.codigoProducto.toLowerCase().includes(valor)
+            );
+        }
+
+        if (filtrados.length === 0) {
+            lista.innerHTML = '<div class="dropdown-item disabled">No se encontraron productos en esta categoría</div>';
+            lista.style.display = 'block';
+            return;
+        }
+
+        lista.innerHTML = filtrados.map(p => `
+            <a href="#" class="dropdown-item" onclick="seleccionarProducto(event, ${p.productoId}, '${p.nombre}', ${p.precioUnitario}, '${p.codigoProducto}')">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>${p.nombre}</strong>
+                        <small class="d-block text-muted">${p.codigoProducto}</small>
+                        <small class="d-block text-success">${p.categoria}</small>
+                    </div>
+                    <div class="text-end">
+                        <strong class="d-block">${parseFloat(p.precioUnitario).toFixed(2)}$</strong>
+                        <small class="text-muted d-block">Stock: ${p.stock}</small>
+                    </div>
+                </div>
+            </a>
+        `).join('');
+
+        lista.style.display = 'block';
+    }
+
+    // Seleccionar producto
+    function seleccionarProducto(e, productoId, nombre, precio, codigo) {
+        e.preventDefault();
+        productoSeleccionado = { productoId, nombre, precio, codigo };
+        document.getElementById('productoSearch').value = nombre;
+        document.getElementById('productosList').style.display = 'none';
+    }
+
+    // Agregar producto seleccionado
+    function agregarProductoSeleccionado() {
+        if (!productoSeleccionado) {
+            alert('Por favor selecciona un producto');
+            return;
+        }
+
+        const id = 'producto-' + Date.now();
+        const html = `
+            <div class="card mb-3 producto-card" id="${id}">
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Producto</label>
+                            <input type="text" class="form-control producto-nombre" value="${productoSeleccionado.nombre}" disabled />
+                            <input type="hidden" class="producto-id" value="${productoSeleccionado.productoId}" />
+                            <input type="hidden" class="producto-precio" value="${productoSeleccionado.precio}" />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Cantidad</label>
+                            <input type="number" class="form-control cantidad-input" value="1" min="1" onchange="actualizarTotales()" />
+                        </div>
+                        <div class="col-12 col-md-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger w-100" onclick="quitarProducto('${id}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col-12">
+                            <label class="form-label">Subtotal</label>
+                            <input type="text" class="form-control subtotal-item" readonly style="background-color: #f8f9fa;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const container = document.getElementById('productosContainer');
+        if (container.querySelector('.alert-info')) {
+            container.innerHTML = '';
+        }
+
+        container.insertAdjacentHTML('beforeend', html);
+        document.getElementById('productoSearch').value = '';
+        productoSeleccionado = null;
+        actualizarTotales();
+        // Limpiar el dropdown después de agregar
+        document.getElementById('productosList').style.display = 'none';
+    }
+
+    // Quitar producto
+    function quitarProducto(id) {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.remove();
+        }
+        
+        // Verificar si hay más productos
+        const productosCards = document.querySelectorAll('.producto-card');
+        if (productosCards.length === 0) {
+            document.getElementById('productosContainer').innerHTML = '<div class="alert alert-info"><i class="bi bi-info-circle"></i> No hay productos agregados. Busca y agrega productos para comenzar.</div>';
+        }
+        
+        actualizarTotales();
+    }
+
+    // Actualizar totales
+    function actualizarTotales() {
+        let subtotal = 0;
+
+        // Obtener todos los productos agregados
+        const productosCards = document.querySelectorAll('.producto-card');
+        
+        productosCards.forEach((card) => {
+            const precioInput = card.querySelector('.producto-precio');
+            const cantidadInput = card.querySelector('.cantidad-input');
+            const subtotalInput = card.querySelector('.subtotal-item');
+
+            if (precioInput && cantidadInput && subtotalInput) {
+                const precio = parseFloat(precioInput.value) || 0;
+                const cantidad = parseInt(cantidadInput.value) || 0;
+                const itemSubtotal = precio * cantidad;
+
+                subtotalInput.value = `$${itemSubtotal.toFixed(2)}`;
+                subtotal += itemSubtotal;
+            }
+        });
+
+        const iva = subtotal * 0.16;
+        const total = subtotal + iva;
+
+        document.getElementById('SubTotal').value = subtotal.toFixed(2);
+        document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('iva').textContent = `$${iva.toFixed(2)}`;
+        document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Guardar productos agregados
+    function guardarProductosAgregados() {
+        const form = document.getElementById('ventaForm');
+        let contador = 0;
+
+        const productosCards = document.querySelectorAll('.producto-card');
+        
+        productosCards.forEach((card) => {
+            const productoId = card.querySelector('.producto-id').value;
+            const cantidad = card.querySelector('.cantidad-input').value;
+            const precio = card.querySelector('.producto-precio').value;
+            const subtotal = (parseFloat(precio) * parseInt(cantidad)).toFixed(2);
+
+            const input1 = document.createElement('input');
+            input1.type = 'hidden';
+            input1.name = `productosAgregados[${contador}].productoId`;
+            input1.value = productoId;
+            form.appendChild(input1);
+
+            const input2 = document.createElement('input');
+            input2.type = 'hidden';
+            input2.name = `productosAgregados[${contador}].cantidad`;
+            input2.value = cantidad;
+            form.appendChild(input2);
+
+            const input3 = document.createElement('input');
+            input3.type = 'hidden';
+            input3.name = `productosAgregados[${contador}].precio`;
+            input3.value = precio;
+            form.appendChild(input3);
+
+            const input4 = document.createElement('input');
+            input4.type = 'hidden';
+            input4.name = `productosAgregados[${contador}].subtotal`;
+            input4.value = subtotal;
+            form.appendChild(input4);
+
+            contador++;
+        });
+
+        if (contador === 0) {
+            alert('Debes agregar al menos un producto a la venta.');
+            event.preventDefault();
+            return false;
+        }
+    }
+</script>
+
+<style>
+    .dropdown-menu {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    .dropdown-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        color: #333;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+
+    .dropdown-item.disabled {
+        cursor: not-allowed;
+        background-color: transparent;
+        color: #6c757d;
+    }
+
+    .position-relative {
+        position: relative;
+    }
+
+    .position-absolute {
+        position: absolute;
+    }
+
+    .start-0 {
+        left: 0;
+    }
+
+    .w-100 {
+        width: 100%;
+    }
+
+    .mt-1 {
+        margin-top: 0.25rem;
+    }
+
+    .producto-card {
+        transition: all 0.3s ease;
+    }
+
+    .producto-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+</style>

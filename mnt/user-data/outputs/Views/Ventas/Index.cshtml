@@ -1,0 +1,299 @@
+@model IEnumerable<TallerElectronika.Models.Venta>
+
+@{
+    ViewData["Title"] = "Ventas";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 30px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-item {
+            display: block;
+            padding: 15px 25px;
+            color: #333;
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .menu-item:hover {
+            background-color: #f0f4ff;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .menu-item.active {
+            background-color: #f0f4ff;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .btn-new {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn-new:hover {
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            background: white;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            color: #666;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-completada {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-pendiente {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-cancelada {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-view {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background-color: #218838;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .number-column {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>⚡ Taller Electrónika</h1>
+        <div class="user-info">
+            <a href="@Url.Action("Logout", "Auth")" class="logout-btn">Cerrar Sesión</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <a href="@Url.Action("Dashboard", "Home")" class="menu-item">📊 Dashboard</a>
+            <a href="@Url.Action("Index", "Clientes")" class="menu-item">👥 Clientes</a>
+            <a href="@Url.Action("Index", "Ventas")" class="menu-item active">🛒 Ventas</a>
+            <a href="@Url.Action("Index", "Inventario")" class="menu-item">📦 Inventario</a>
+            <a href="@Url.Action("Index", "Reportes")" class="menu-item">📈 Reportes</a>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h1>🛒 Gestión de Ventas</h1>
+                <a href="@Url.Action("Create", "Ventas")" class="btn-new">+ Nueva Venta</a>
+            </div>
+
+            @if (Model.Count() > 0)
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Venta</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Subtotal</th>
+                            <th>Impuesto</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var venta in Model)
+                        {
+                            <tr>
+                                <td>#@venta.VentaId</td>
+                                <td>@venta.Cliente.Nombre @venta.Cliente.Apellido</td>
+                                <td>@venta.FechaVenta.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="number-column">@venta.SubTotal.ToString("C")</td>
+                                <td class="number-column">@venta.Impuesto.ToString("C")</td>
+                                <td class="number-column"><strong>@venta.Total.ToString("C")</strong></td>
+                                <td>
+                                    @{
+                                        string statusClass = venta.Estado switch
+                                        {
+                                            "Completada" => "status-completada",
+                                            "Cancelada" => "status-cancelada",
+                                            _ => "status-pendiente"
+                                        };
+                                    }
+                                    <span class="status-badge @statusClass">@venta.Estado</span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="@Url.Action("Details", "Ventas", new { id = venta.VentaId })" class="btn-sm btn-view">Ver</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="no-data">
+                    <h3>No hay ventas registradas</h3>
+                    <p><a href="@Url.Action("Create", "Ventas")" style="color: #667eea; text-decoration: underline;">Registrar la primera venta</a></p>
+                </div>
+            }
+        </div>
+    </div>
+</body>
+</html>

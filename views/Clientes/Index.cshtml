@@ -1,0 +1,66 @@
+@model IEnumerable<TallerElectronika.Models.Cliente>
+
+@{
+    ViewData["Title"] = "Clientes";
+}
+
+<div class="row mb-4">
+    <div class="col-12 col-sm-6">
+        <h1 class="mb-0"><i class="bi bi-people"></i> Clientes</h1>
+    </div>
+    <div class="col-12 col-sm-6 text-end">
+        <a href="@Url.Action("Create", "Clientes")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Cliente
+        </a>
+    </div>
+</div>
+
+<!-- Tabla Responsiva -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th class="d-none d-md-table-cell">Email</th>
+                    <th class="d-none d-lg-table-cell">Teléfono</th>
+                    <th class="d-none d-lg-table-cell">Ciudad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cliente in Model)
+                {
+                    <tr>
+                        <td><strong>@cliente.Nombre @cliente.Apellido</strong></td>
+                        <td class="d-none d-md-table-cell">@cliente.Email</td>
+                        <td class="d-none d-lg-table-cell">@(string.IsNullOrEmpty(cliente.Telefono) ? "---" : cliente.Telefono)</td>
+                        <td class="d-none d-lg-table-cell">@(string.IsNullOrEmpty(cliente.Ciudad) ? "---" : cliente.Ciudad)</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="@Url.Action("Details", "Clientes", new { id = cliente.ClienteId })" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="@Url.Action("Edit", "Clientes", new { id = cliente.ClienteId })" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="post" action="@Url.Action("Delete", "Clientes", new { id = cliente.ClienteId })" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">
+        <i class="bi bi-info-circle"></i> No hay clientes registrados.
+    </div>
+}

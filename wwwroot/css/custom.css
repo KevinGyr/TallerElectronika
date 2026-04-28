@@ -1,0 +1,305 @@
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --font-scale: 1;
+    --padding-scale: 1;
+    --gap-scale: 1;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    overflow-x: hidden;
+}
+
+/* Aplicar escalas dinámicas */
+.navbar-custom {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-custom .navbar-brand {
+    font-size: calc(clamp(1rem, 2vw, 1.5rem) * var(--font-scale));
+    font-weight: bold;
+    color: white !important;
+}
+
+.sidebar {
+    background: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    min-height: calc(100vh - 60px);
+    padding: calc(20px * var(--padding-scale));
+    position: sticky;
+    top: 60px;
+    overflow-y: auto;
+}
+
+.sidebar .nav-link {
+    color: #333;
+    padding: calc(clamp(10px, 2vw, 12px) * var(--padding-scale)) calc(clamp(15px, 3vw, 20px) * var(--padding-scale));
+    border-left: 4px solid transparent;
+    transition: all 0.3s;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: calc(10px * var(--gap-scale));
+    font-size: calc(clamp(0.85rem, 1.5vw, 1rem) * var(--font-scale));
+    white-space: nowrap;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #f0f4ff;
+    border-left-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.sidebar .nav-link.active {
+    background-color: #f0f4ff;
+    border-left-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.main-content {
+    padding: calc(clamp(15px, 3vw, 30px) * var(--padding-scale)) calc(clamp(10px, 2vw, 20px) * var(--padding-scale));
+    overflow-x: hidden;
+}
+
+.main-content h1 {
+    font-size: calc(clamp(1.5rem, 4vw, 2rem) * var(--font-scale));
+    margin-bottom: 20px;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: calc(clamp(6px, 1.5vw, 12px) * var(--padding-scale)) calc(clamp(10px, 2vw, 24px) * var(--padding-scale));
+    font-size: calc(clamp(0.8rem, 1vw, 1rem) * var(--font-scale));
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-group-sm > .btn {
+    padding: calc(clamp(4px, 1vw, 8px) * var(--padding-scale)) calc(clamp(6px, 1.5vw, 12px) * var(--padding-scale));
+    font-size: calc(clamp(0.7rem, 0.9vw, 0.875rem) * var(--font-scale));
+}
+
+.stat-card {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: calc(clamp(15px, 3vw, 20px) * var(--padding-scale));
+    border-radius: 10px;
+    text-align: center;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: calc(10px * var(--gap-scale));
+}
+
+.stat-value {
+    font-size: calc(clamp(1.5rem, 4vw, 2rem) * var(--font-scale));
+    font-weight: bold;
+    word-break: break-word;
+}
+
+.stat-label {
+    font-size: calc(clamp(0.7rem, 1.5vw, 0.875rem) * var(--font-scale));
+    opacity: 0.9;
+}
+
+.table {
+    background: white;
+    font-size: calc(clamp(0.75rem, 1vw, 1rem) * var(--font-scale));
+}
+
+.table thead th {
+    color: #333;
+    font-weight: 600;
+    padding: calc(clamp(8px, 1.5vw, 12px) * var(--padding-scale));
+    font-size: calc(clamp(0.7rem, 1vw, 0.875rem) * var(--font-scale));
+}
+
+.table tbody td {
+    padding: calc(clamp(8px, 1.5vw, 12px) * var(--padding-scale));
+    word-break: break-word;
+}
+
+.form-control,
+.form-select {
+    font-size: calc(clamp(0.85rem, 1vw, 1rem) * var(--font-scale));
+    padding: calc(clamp(8px, 1.5vw, 12px) * var(--padding-scale));
+}
+
+.form-label {
+    font-size: calc(clamp(0.8rem, 1vw, 0.875rem) * var(--font-scale));
+    margin-bottom: 6px;
+}
+
+.badge {
+    font-size: calc(clamp(0.65rem, 0.9vw, 0.75rem) * var(--font-scale));
+    padding: calc(clamp(4px, 1vw, 6px) * var(--padding-scale)) calc(clamp(6px, 1.5vw, 8px) * var(--padding-scale));
+}
+
+.alert {
+    font-size: calc(clamp(0.85rem, 1vw, 1rem) * var(--font-scale));
+    padding: calc(clamp(12px, 2vw, 16px) * var(--padding-scale));
+}
+
+.row {
+    margin-right: calc(-0.5rem * var(--gap-scale));
+    margin-left: calc(-0.5rem * var(--gap-scale));
+}
+
+.col-12, .col-sm-6, .col-md-3, .col-md-6, .col-md-8, .col-md-9,
+.col-lg-2, .col-lg-3, .col-lg-4, .col-lg-10 {
+    padding-right: calc(0.5rem * var(--gap-scale));
+    padding-left: calc(0.5rem * var(--gap-scale));
+}
+
+/* Responsivo - Tablets (768px) */
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        min-height: auto;
+        padding: calc(10px * var(--padding-scale)) 0;
+        margin-bottom: 20px;
+    }
+
+    .sidebar .nav-link {
+        padding: calc(10px * var(--padding-scale)) calc(clamp(12px, 2vw, 15px) * var(--padding-scale));
+        font-size: calc(clamp(0.8rem, 1.3vw, 0.9rem) * var(--font-scale));
+    }
+
+    .main-content {
+        padding: calc(clamp(12px, 2vw, 20px) * var(--padding-scale));
+    }
+
+    .stat-card {
+        margin-bottom: 15px;
+        min-height: 100px;
+    }
+
+    .stat-value {
+        font-size: calc(clamp(1.2rem, 3vw, 1.5rem) * var(--font-scale));
+    }
+
+    .stat-label {
+        font-size: calc(clamp(0.65rem, 1.3vw, 0.75rem) * var(--font-scale));
+    }
+
+    .table {
+        font-size: calc(clamp(0.7rem, 0.9vw, 0.85rem) * var(--font-scale));
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: calc(clamp(6px, 1vw, 10px) * var(--padding-scale));
+    }
+
+    .d-none.d-md-table-cell {
+        display: none !important;
+    }
+}
+
+/* Responsivo - Móviles (576px) */
+@media (max-width: 576px) {
+    html {
+        font-size: calc(14px * var(--font-scale));
+    }
+
+    .navbar-custom .navbar-brand {
+        font-size: calc(clamp(0.9rem, 2vw, 1.2rem) * var(--font-scale));
+    }
+
+    .main-content {
+        padding: calc(clamp(10px, 1.5vw, 15px) * var(--padding-scale));
+    }
+
+    .main-content h1 {
+        font-size: calc(clamp(1.2rem, 3vw, 1.5rem) * var(--font-scale));
+        margin-bottom: 15px;
+    }
+
+    .sidebar .nav-link {
+        padding: calc(8px * var(--padding-scale)) calc(clamp(10px, 2vw, 12px) * var(--padding-scale));
+        font-size: calc(clamp(0.7rem, 1.2vw, 0.8rem) * var(--font-scale));
+        gap: calc(8px * var(--gap-scale));
+    }
+
+    .stat-card {
+        margin-bottom: 12px;
+        min-height: 90px;
+        padding: calc(clamp(12px, 2vw, 15px) * var(--padding-scale));
+    }
+
+    .stat-value {
+        font-size: calc(clamp(1rem, 2.5vw, 1.3rem) * var(--font-scale));
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        font-size: calc(clamp(0.6rem, 1.2vw, 0.7rem) * var(--font-scale));
+    }
+
+    .card {
+        margin-bottom: 12px;
+        border-radius: 8px;
+    }
+
+    .table {
+        font-size: calc(clamp(0.65rem, 0.8vw, 0.75rem) * var(--font-scale));
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: calc(clamp(5px, 0.8vw, 8px) * var(--padding-scale));
+    }
+
+    .table thead th {
+        font-size: calc(clamp(0.6rem, 0.9vw, 0.7rem) * var(--font-scale));
+    }
+
+    .btn {
+        padding: calc(clamp(4px, 0.8vw, 6px) * var(--padding-scale)) calc(clamp(6px, 1.2vw, 8px) * var(--padding-scale));
+        font-size: calc(clamp(0.65rem, 0.8vw, 0.75rem) * var(--font-scale));
+    }
+
+    .d-none.d-md-table-cell,
+    .d-none.d-lg-table-cell {
+        display: none !important;
+    }
+
+    .row {
+        margin-right: calc(-0.3rem * var(--gap-scale));
+        margin-left: calc(-0.3rem * var(--gap-scale));
+    }
+
+    .col-12, .col-sm-6 {
+        padding-right: calc(0.3rem * var(--gap-scale));
+        padding-left: calc(0.3rem * var(--gap-scale));
+    }
+}

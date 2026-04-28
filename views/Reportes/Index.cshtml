@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Reportes";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h1><i class="bi bi-bar-chart"></i> Reportes</h1>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Reporte Ventas -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-graph-up text-primary"></i> Reporte de Ventas
+                </h5>
+                <p class="card-text">Visualiza y descarga reportes de todas las ventas realizadas.</p>
+                <a href="@Url.Action("ReporteVentas", "Reportes")" class="btn btn-primary btn-sm">
+                    <i class="bi bi-arrow-right"></i> Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte Inventario -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-box text-success"></i> Reporte de Inventario
+                </h5>
+                <p class="card-text">Consulta el estado actual del inventario y valor total.</p>
+                <a href="@Url.Action("ReporteInventario", "Reportes")" class="btn btn-success btn-sm">
+                    <i class="bi bi-arrow-right"></i> Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte Clientes -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-people text-info"></i> Reporte de Clientes
+                </h5>
+                <p class="card-text">Información detallada sobre clientes y sus compras.</p>
+                <a href="@Url.Action("ReporteClientes", "Reportes")" class="btn btn-info btn-sm">
+                    <i class="bi bi-arrow-right"></i> Ver Reporte
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

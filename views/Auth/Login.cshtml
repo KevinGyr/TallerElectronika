@@ -1,0 +1,60 @@
+@model TallerElectronika.Models.Usuario
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Taller Electrónika</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/css/login.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1><i class="bi bi-lightning-charge"></i> Taller Electrónika</h1>
+                <p>Sistema de Gestión</p>
+            </div>
+
+            @if (!string.IsNullOrEmpty(ViewBag.Error))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-circle"></i> @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form method="post" action="@Url.Action("Login", "Auth")">
+                <div class="form-group">
+                    <label for="nombreUsuario" class="form-label">Usuario</label>
+                    <input type="text" id="nombreUsuario" name="nombreUsuario" class="form-control" placeholder="admin" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required />
+                </div>
+
+                <button type="submit" class="btn-login mb-3">
+                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="text-center">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle"></i> Usuario: <strong>admin</strong> | Contraseña: <strong>admin123</strong>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

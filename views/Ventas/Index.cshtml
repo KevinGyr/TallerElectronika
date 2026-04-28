@@ -1,0 +1,74 @@
+@model IEnumerable<TallerElectronika.Models.Venta>
+
+@{
+    ViewData["Title"] = "Ventas";
+}
+
+<div class="row mb-4">
+    <div class="col-12 col-sm-6">
+        <h1 class="mb-0"><i class="bi bi-cart"></i> Ventas</h1>
+    </div>
+    <div class="col-12 col-sm-6 text-end">
+        <a href="@Url.Action("Create", "Ventas")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nueva Venta
+        </a>
+    </div>
+</div>
+
+<!-- Tabla Responsiva -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>ID Venta</th>
+                    <th class="d-none d-md-table-cell">Cliente</th>
+                    <th class="d-none d-lg-table-cell">Fecha</th>
+                    <th class="text-end">Subtotal</th>
+                    <th class="text-end">Impuesto</th>
+                    <th class="text-end">Total</th>
+                    <th class="d-none d-lg-table-cell">Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var venta in Model)
+                {
+                    <tr>
+                        <td><strong>#@venta.VentaId</strong></td>
+                        <td class="d-none d-md-table-cell">@venta.Cliente?.Nombre @venta.Cliente?.Apellido</td>
+                        <td class="d-none d-lg-table-cell">@venta.FechaVenta.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="text-end">@venta.SubTotal.ToString("C")</td>
+                        <td class="text-end">@venta.Impuesto.ToString("C")</td>
+                        <td class="text-end"><strong>@venta.Total.ToString("C")</strong></td>
+                        <td class="d-none d-lg-table-cell">
+                            @{
+                                string badgeClass = venta.Estado switch
+                                {
+                                    "Completada" => "bg-success",
+                                    "Cancelada" => "bg-danger",
+                                    _ => "bg-warning"
+                                };
+                            }
+                            <span class="badge @badgeClass">@venta.Estado</span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="@Url.Action("Details", "Ventas", new { id = venta.VentaId })" class="btn btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info mt-3">
+        <i class="bi bi-info-circle"></i> No hay ventas registradas.
+    </div>
+}
